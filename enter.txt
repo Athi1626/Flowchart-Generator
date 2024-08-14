@@ -1,7 +1,25 @@
-OUTPUT "are we insane?"
-INPUT ans
-IF ans = "yes" THEN
-	OUTPUT "correct"
-ELSE
-	OUTPUT "incorrect"
-ENDIF
+PROCEDURE Signup(Username, Password, Role)
+  IF "User.txt" exists THEN
+    CREATE FILE "users.txt"
+  END IF
+
+  OPEN FILE "users.txt" FOR READING
+  READ ALL LINES INTO Users
+
+  FOR EACH User IN Users
+    IF User.Username  is = Username OR User.Password == Password THEN
+      PRINT "Username or password already exists, try again"
+      CALL access("signup")
+      RETURN
+    END IF
+  END FOR
+
+  IF Length(Password) <= 7 THEN
+    PRINT "Password too short, try again"
+    CALL access("signup")
+  ELSE
+    OPEN FILE "users.txt" FOR APPENDING
+    WRITE Username + "," + Password + "," + Role + ",pending" TO FILE
+    PRINT "Registration successful, awaiting approval"
+  END IF
+END PROCEDURE
